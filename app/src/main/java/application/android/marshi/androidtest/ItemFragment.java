@@ -2,6 +2,7 @@ package application.android.marshi.androidtest;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,8 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import application.android.marshi.androidtest.databinding.FragmentItemBinding;
 import application.android.marshi.androidtest.dummy.DummyContent;
 import application.android.marshi.androidtest.dummy.DummyContent.DummyItem;
+
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -55,8 +60,7 @@ public class ItemFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_item_list, container, false);
 
         // Set the adapter
@@ -68,11 +72,16 @@ public class ItemFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
         }
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -109,5 +118,33 @@ public class ItemFragment extends Fragment {
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
         void onListFragmentInteraction(DummyItem item);
+    }
+
+    private class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<BindingHolder<FragmentItemBinding>> {
+
+        private final List<DummyItem> mValues;
+
+        public MyItemRecyclerViewAdapter(List<DummyItem> items) {
+            mValues = items;
+        }
+
+        @Override
+        public BindingHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new BindingHolder(getContext(), parent, R.layout.fragment_item);
+        }
+
+        @Override
+        public void onBindViewHolder(BindingHolder<FragmentItemBinding> holder, int position) {
+            FragmentItemBinding binding = holder.binding;
+            DummyItem dummyItem = mValues.get(position);
+            binding.setDummyData(dummyItem);
+            binding.itemList.setOnClickListener(v -> Toast.makeText(getContext(), "aiueo", Toast.LENGTH_LONG).show());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
     }
 }
